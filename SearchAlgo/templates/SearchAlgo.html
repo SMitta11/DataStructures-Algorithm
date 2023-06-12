@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        .scroll {
+            display: block;
+            border: 0px solid;
+            padding: 2px;
+            margin-top: 5px;
+            width: 100%;
+            overflow-y: auto;
+        }
+
+        /* width */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        /* Track */
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        /* Handle */
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+        }
+
+        /* Handle on hover */
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+    <style>
+        * {
+          box-sizing: border-box;
+        }
+        
+        .row {
+          display: flex;
+        }
+        
+        /* Create two equal columns that sits next to each other */
+        .column {
+          flex: 50%;
+          padding: 10px;
+          height: 300px; /* Should be removed. Only for demonstration */
+        }
+        </style>
+</head>
+
+<body>
+    <form action="SearchAlgo.py" method="post">
+        <h1>Search Algorithms</h1>
+        <div class="row">
+        <div class="column">
+        <h3>Select any one :Input size or Input array:</h3>
+        <label>
+            Input size : <input type="text" id="inputsize" name="inputsize" value="10000"></input>
+        </label>
+        <button id="button1" type="button" name="generatedata" onclick="callgenerateDS()">Generate random array</button>
+        <br />
+
+        <label>
+            OR<br />Input array : <input type="text" id="userarray" name="userarray" value="1,2,3,4,5,6,7,8"></input>
+        </label>
+        <button id="button3" type="button" name="generatearray" onclick="callgenerateUserArray()">Generate array given
+            by user</button>
+        
+        <div>
+            <h3>Select an algorithm :</h3>
+
+            <input  type="checkbox" name="selectalgorithm" value="LS">Linear search<br>
+            <input  type="checkbox" name="selectalgorithm" value="BS">Binary search in sorted array<br>
+            <input  type="checkbox" name="selectalgorithm" value="BST">Binary search tree<br>
+            <input  type="checkbox" name="selectalgorithm" value="RBT">Red-Black tree<br>
+            
+            
+
+            </select><br>
+
+            </label>
+        </div>
+        <label>
+            Search Element : <input type="text" id="searchelement" name="searchelement"></input>
+        </label><br>
+        <div>
+            <button id="button2" type="button" name="searchElement" onclick="searchByElement()">Search</button>
+
+            <button id="button4" type="reset" name="reset" onclick="resetvalues()">Reset</button>
+        </div>
+ 
+        </div>
+        <div class="column">
+        <button id="button5" type="button" name="BSTDataStructure" onclick="bstDataStruct()">BST Data Structure</button>
+        <button id="button6" type="button" name="RBTDataStructure" onclick="rbtDataStruct()">RBT Data Structure</button>
+        <button id="button7" type="button" name="BinarySearchDataStructure" onclick="binaryDataStruct()">Binary Search Data Structure</button>
+        <div id="output4"></div>
+        <div id="output5"></div>
+        <div id="output6"></div>
+    </div>
+    </div>
+
+        <br/><br/><br/>
+        <div id="output1"></div>
+        <div id="output2"></div>
+        <div id="output3"></div>
+    </form>
+</body>
+<script>
+
+    function callgenerateDS() {
+        resetvalues();
+        //disable button
+        document.getElementById("button1").innerHTML ="Generating..."
+        document.getElementById("button1").disabled = true;
+        var parentDiv = document.getElementById("output1");
+        parentDiv.style.cssText += 'width:400px;height:150px;float:left;border: 1px solid black; padding: 5px; margin: 2px;';
+        var inputsize = document.getElementById('inputsize').value;
+        var data = new FormData();
+        data.append('inputsize', inputsize);
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', 'generateAllDS', true);
+        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+
+        xhr.onload = function () {
+            document.getElementById("button1").disabled = false;
+            document.getElementById("button1").innerHTML ="Generate random array";
+            // do something to response
+            //console.log(this.responseText);
+            var json = JSON.parse(this.responseText);
+            //console.log(json);
+            var sortedArr = json['sorted']
+            var uniqueArr = json['unique']
+            //console.log(uniqueArr.length)
+            var sortedArrElem = document.createElement("div");
+            sortedArrElem.classList.add("scroll");
+            var sortedArrContent = document.createTextNode("Sorted Array: " + sortedArr);
+            sortedArrElem.appendChild(sortedArrContent);
+
+            var uniqueArrElem = document.createElement("div");
+            uniqueArrElem.classList.add("scroll");
+            var uniqueArrContent = document.createTextNode("Unique Array: " + uniqueArr);
+            uniqueArrElem.appendChild(uniqueArrContent);
+            parentDiv.appendChild(uniqueArrElem);
+        };
+        xhr.send(JSON.stringify({ "inputsize": inputsize }));
+    }
+
+    function callgenerateUserArray() {
+        resetvalues();
+        var parentDiv = document.getElementById("output1");
+        parentDiv.style.cssText += 'width:400px;height:150px;float:left;border: 1px solid black; padding: 5px; margin: 2px;';
+        var userarray = document.getElementById('userarray').value;
+        //console.log(userarray);
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', 'generateAllDS', true);
+        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xhr.onload = function () {
+            var json = JSON.parse(this.responseText);
+            //console.log(json);
+            //var sortedArr = json['sorted']
+            var uniqueArr = json['unique']
+
+            var uniqueArrElem = document.createElement("div");
+            uniqueArrElem.classList.add("scroll");
+            var uniqueArrContent = document.createTextNode("Unique Array: " + uniqueArr);
+            uniqueArrElem.appendChild(uniqueArrContent);
+
+            parentDiv.appendChild(uniqueArrElem);
+            //parentDiv.appendChild(sortedArrElem);
+        };
+        //console.log(userarray);
+        xhr.send(JSON.stringify({ "userarray": userarray }));
+        //console.log(JSON.stringify({ "userarray": userarray }));
+
+    }
+
+    function bstDataStruct()
+    {
+        document.getElementById("output4").innerHTML = "";
+        var parentDivBST = document.getElementById("output4");
+        parentDivBST.style.cssText += 'width:400px;height:100px;float:left;border: 1px solid black; padding: 5px; margin: 2px;';
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', 'generateBSTDS', true);
+        //console.log("posted");
+        xhr.onload = function () {
+            var json = JSON.parse(this.responseText);
+            console.log(json);
+            //var sortedArr = json['sorted']
+            var dsBST = json['BST'];
+            //console.log(dsBST,"dsBST");
+
+            var dsBSTElem = document.createElement("div");
+            dsBSTElem.classList.add("scroll");
+            var dsBSTContent = document.createTextNode("BST Preorder DS: " + dsBST);
+            dsBSTElem.appendChild(dsBSTContent);
+
+            parentDivBST.appendChild(dsBSTElem);
+            //parentDiv.appendChild(sortedArrElem);
+        
+    };
+    xhr.send();
+
+}
+
+function rbtDataStruct()
+    {
+        document.getElementById("output5").innerHTML = "";
+        var parentDivRBT = document.getElementById("output5");
+        parentDivRBT.style.cssText += 'width:400px;height:100px;float:left;border: 1px solid black; padding: 5px; margin: 2px;';
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', 'generateRBTDS', true);
+        console.log("posted");
+        xhr.onload = function () {
+            var json = JSON.parse(this.responseText);
+            console.log(json);
+            //var sortedArr = json['sorted']
+            var dsRBT = json['RBT'];
+            console.log(dsRBT,"dsRBT");
+
+            var dsRBTElem = document.createElement("div");
+            dsRBTElem.classList.add("scroll");
+            var dsRBTContent = document.createTextNode("RBT Preorder DS: " + dsRBT);
+            dsRBTElem.appendChild(dsRBTContent);
+
+            parentDivRBT.appendChild(dsRBTElem);
+            //parentDiv.appendChild(sortedArrElem);
+        
+    };
+    xhr.send();
+
+}
+
+function binaryDataStruct()
+    {
+        document.getElementById("output6").innerHTML = "";
+        var parentDivBS = document.getElementById("output6");
+        parentDivBS.style.cssText += 'width:400px;height:100px;float:left;border: 1px solid black; padding: 5px; margin: 2px;';
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', 'generateBSDS', true);
+        console.log("posted");
+        xhr.onload = function () {
+            var json = JSON.parse(this.responseText);
+            console.log(json);
+            //var sortedArr = json['sorted']
+            var dsBS= json['BS'];
+            console.log(dsBS,"dsBS");
+
+            var dsBSElem = document.createElement("div");
+            dsBSElem.classList.add("scroll");
+            var dsBSContent = document.createTextNode("Binary search Sorted DS: " + dsBS);
+            dsBSElem.appendChild(dsBSContent);
+
+            parentDivBS.appendChild(dsBSElem);
+            //parentDiv.appendChild(sortedArrElem);
+        
+    };
+    xhr.send();
+
+}
+
+    function getDiffTime(val1, val2) {
+        //to get difference in running time with 2 decimal points
+        return Math.round((val1 - val2) * 100) / 100;
+    }
+    function createNode(text){
+        var elem = document.createElement("div");
+        var content = document.createTextNode(text);
+        elem.appendChild(content);
+        return elem;
+    }
+
+    function runTimeNode(type,time){
+        var timeText = "microsecond";
+        return createNode(type+" running time: " + time + " " + timeText);    
+    }
+
+    function diffText(type1,type2,text1,text2){
+        var timeText = "microsecond";
+        var diffText = "";
+        var diffTime = getDiffTime(type1,type2);
+        console.log("diff between ",text1,text2,"is",diffTime);
+        if (type1 && type2) {
+            if (diffTime > 0) {
+                diffText = "Running time for "+text1+" is " + Math.abs(diffTime) + " " + timeText + " more than "+text2;
+            }
+            else if (diffTime == 0) {
+                diffText = "Running time of "+text1+" and "+text2+" is same";
+            }
+            else {
+                diffText = "Running time for "+text2+" is " + Math.abs(diffTime) + " " + timeText + " more than "+text1;
+            }
+        }
+        return diffText;
+    }
+
+    function searchByElement() {
+        var timeText = "microsecond";
+        var selectedAlgo = [];
+        document.getElementById("output2").innerHTML = "";
+        document.getElementById("output3").innerHTML = "";
+        var parentDiv = document.getElementById("output2");
+        var parentDiv1 = document.getElementById("output3");
+        parentDiv.style.cssText += 'width:400px;height:150px;float:left;border: 1px solid black; padding: 5px; margin: 2px;';
+        parentDiv1.style.cssText += 'width:500px;height:250px;float:left;border: 1px solid black; padding: 5px; margin: 2px;';
+        var searchelement = document.getElementById('searchelement').value;
+        console.log(searchelement);
+        var selectedItem = document.getElementsByName('selectalgorithm');
+        var len = selectedItem.length;
+        for (var i = 0; i < len; i++) {
+            if (selectedItem[i].checked) {
+                selectedAlgo.push(selectedItem[i].value);
+            }
+
+        }
+        //console.log(selectedAlgo);
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', 'searchAllElements', true);
+        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xhr.onload = function () {
+            //console.log(this.responseText);
+            var json = JSON.parse(this.responseText);
+            console.log(json);
+            if (json.hasOwnProperty('LS')){
+                var runTimeLS = json['LS'][0]
+                var foundLS = json['LS'][1]
+            }
+            
+            if (json.hasOwnProperty('BS')){
+                var runTimeBS = json['BS'][0]
+                var foundBS = json['BS'][1];
+            }
+            if (json.hasOwnProperty('BST')){
+                var runTimeBST = json['BST'][0]
+                var foundBST = json['BST'][1];
+            }
+            if (json.hasOwnProperty('RBT')){
+                var runTimeRBT = json['RBT'][0]
+                var foundRBT = json['RBT'][1];                
+            }
+
+            console.log(runTimeLS);
+            console.log(runTimeBS);
+            console.log(runTimeBST);
+            console.log(runTimeRBT);
+
+            if (foundLS||foundBS||foundBST||foundRBT){
+                parentDiv.appendChild(createNode("Element found"));
+            }
+            else{
+                parentDiv.appendChild(createNode("Element not found"));
+            }
+
+            if (runTimeLS) {
+                parentDiv.appendChild(runTimeNode("Linear search",runTimeLS));
+            }
+            if (runTimeBS) {
+                parentDiv.appendChild(runTimeNode("Binary search",runTimeBS));
+            }
+            if (runTimeBST) {
+                parentDiv.appendChild(runTimeNode("Binary search tree",runTimeBST));
+            }
+            if (runTimeRBT) {
+                parentDiv.appendChild(runTimeNode("Red Black tree",runTimeRBT));
+            }
+            
+            if (runTimeLS && runTimeBS) {    
+                parentDiv1.appendChild(createNode(diffText(runTimeLS,runTimeBS,"linear search","binary search")));
+            }
+            if (runTimeLS && runTimeBST) {
+                parentDiv1.appendChild(createNode(diffText(runTimeLS,runTimeBST,"linear search","binary search tree")));
+            }
+            if (runTimeLS && runTimeRBT) {
+                parentDiv1.appendChild(createNode(diffText(runTimeLS,runTimeRBT,"linear search","red black tree")));
+            }
+            if (runTimeBS && runTimeBST) {
+                parentDiv1.appendChild(createNode(diffText(runTimeBS,runTimeBST,"binary search","binary search tree")));
+            }
+            if (runTimeBS && runTimeRBT) {
+                parentDiv1.appendChild(createNode(diffText(runTimeBS,runTimeRBT,"binary search tree","red black tree")));
+            }
+            if (runTimeBST && runTimeRBT) {
+                parentDiv1.appendChild(createNode(diffText(runTimeBST,runTimeRBT,"binary search tree","red black tree")));
+            }
+        };
+        xhr.send(JSON.stringify({ "searchelement": searchelement, "selectedAlgo": selectedAlgo }));
+    }
+
+    function resetvalues() {
+        document.getElementById("output1").innerHTML = "";
+        document.getElementById("output2").innerHTML = "";
+        document.getElementById("output3").innerHTML = "";
+        document.getElementById("output4").innerHTML = "";
+        document.getElementById("output5").innerHTML = "";
+        document.getElementById("output6").innerHTML = "";
+    }
+
+
+</script>
+
+</html>
